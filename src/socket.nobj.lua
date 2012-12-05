@@ -74,6 +74,15 @@ local socket_options = {
 		[27] = { name="rcvtimeo",          otype="INT",    mode="rw", ltype="int" },
 		[28] = { name="sndtimeo",          otype="INT",    mode="rw", ltype="int" },
 	},
+	{ ver_def = 'VERSION_3_2', major = 3, minor = 2,
+		[22] = { },
+		[23] = { },
+		[24] = { },
+		[25] = { },
+		[26] = { },
+		[27] = { name="rcvtimeo",          otype="INT",    mode="rw", ltype="int" },
+		[28] = { name="sndtimeo",          otype="INT",    mode="rw", ltype="int" },
+	},
 	{ ver_def = 'VERSION_3_0', major = 3, minor = 0,
 		[1] =  { name="hwm",               otype="INT",    mode="rw",
 custom = [[
@@ -315,6 +324,8 @@ add(opt_types, [[
 #else
 #  if VERSION_2_2
 #    define MAX_OPTS VERSION_2_2_MAX_OPT
+#  elif VERSION_3_2
+#    define MAX_OPTS VERSION_3_2_MAX_OPT
 #  elif VERSION_2_1
 #    define MAX_OPTS VERSION_2_1_MAX_OPT
 #  else
@@ -401,8 +412,12 @@ local VERSION_2_0 = true
 local VERSION_2_1 = false
 local VERSION_2_2 = false
 local VERSION_3_0 = false
+local VERSION_3_2 = false
 local zver = _M.version()
-if zver[1] == 3 then
+if zver[1] == 3 and zver[2] == 2 then
+  VERSION_2_0 = false
+  VERSION_3_2 = true
+elseif zver[1] == 3 then
 	VERSION_2_0 = false
 	VERSION_3_0 = true
 elseif zver[1] == 2 and zver[2] == 2 then
@@ -442,6 +457,9 @@ typedef int socket_t;
 #if VERSION_2_0
 #  define zmq_sendmsg      zmq_send
 #  define zmq_recvmsg      zmq_recv
+#elseif VERSION_3_2
+#  define zmq_sendmsg      zmq_msg_send
+#  define zmq_recvmsg      zmq_msg_recv
 #endif
 
 /* socket option types. */
